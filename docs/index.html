@@ -1,15 +1,17 @@
 <!DOCTYPE html>
-<html lang="zh-cn">
+<html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
-  <title>Document</title>
+  <title>Kite - 移动端专业调优工具</title>
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
   <meta name="description" content="Description">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
   <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify@4/lib/themes/vue.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk/dist/gitalk.css" />
 </head>
 <body>
-  <div id="app"></div>
+  <div id="app">加载中</div>
+  <script src="//cdn.jsdelivr.net/npm/docsify-edit-on-github"></script>
   <script>
     window.$docsify = {
       name: 'Kite',
@@ -34,8 +36,52 @@
       externalLinkTarget: '_blank', // 外部链接的打开方式
       cornerExternalLinkTarget: '_self', // 右上角链接的打开方式
       externalLinkRel: '', // 默认为 noopener (no opener) 可以防止新打开的外部页面
-    //   onlyCover: false, // 只在访问主页时加载封面
+      //   onlyCover: false, // 只在访问主页时加载封面
       notFoundPage: true,
+      
+      search: "auto", // default
+
+      search: [
+        "/", // home.md
+        "/en/" // /en/home.md
+      ],
+
+      // complete configuration parameters
+      search: {
+        maxAge: 86400000, // Expiration time, the default one day
+        paths: [], // or 'auto'
+        placeholder: "🔍 搜索",
+
+        // Localization
+        placeholder: {
+          "/": "🔍 搜索",
+          "/en/": "🔍 Type to search",
+        },
+
+        noData: "😞 No Results!",
+
+        // Localization
+        noData: {
+          "/": "😞 找不到结果",
+          "/en/": "😞 No Results",
+        },
+
+        // Headline depth, 1 - 6
+        depth: 2,
+
+        hideOtherSidebarContent: false, // whether or not to hide other sidebar content
+
+        // To avoid search index collision
+        // between multiple websites under the same domain
+        namespace: "website-1",
+      },
+      
+      pagination: { // 分页插件配置
+        previousText: 'PREVIOUS',
+        nextText: 'NEXT',
+        crossChapter: true,
+      },
+      ga: "UA-139052962-1", // google analytics
     //   plugins: [
     //      EditOnGithubPlugin.create(
     //     'https://github.com/hqber/Kite/docs/',
@@ -57,6 +103,69 @@
   
   <!--图片缩放-->
   <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/zoom-image.min.js"></script>
+  
+  <!--全局搜索插件-->
+  <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/search.min.js"></script>
+  
+  <!--代码段复制插件-->
+  <script src="//cdn.jsdelivr.net/npm/docsify-copy-code"></script>
+  
+  <!--分页插件配置-->
+  <script src="//cdn.jsdelivr.net/npm/docsify-pagination/dist/docsify-pagination.min.js"></script>
+  
+  
+  <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/gitalk.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.js"></script>
+  <script>
+    const gitalk = new Gitalk({
+      clientID: "76654035fd30f3ab9b32",
+      clientSecret: "4949f72ea377188ebc1442337aa120bfe40b282f",
+      repo: "Kite",
+      owner: "hqber",
+      admin: ["hqber"],
+      perPage: 20,
+    //   language: "zh-CN",
+      labels: ["评论"],
+      distractionFreeMode: false
+    });
+     plugins: [
+    function (hook, vm) {
+        hook.doneEach(function () {
+            var label, domObj, main, divEle, gitalk;
+            label = vm.route.path.split("/").pop();
+            domObj = Docsify.dom;
+            main = domObj.getNode("#main");
+
+            /**
+             * render gittalk
+             */
+            // if (vm.route.path.includes("en"))
+            //     gitalkConfig.language = "en";
+            // }
+            Array.apply(
+                null,
+                document.querySelectorAll("div.gitalk-container")
+            ).forEach(function (ele) {
+                ele.remove();
+            });
+            divEle = domObj.create("div");
+            divEle.id = "gitalk-container-" + label;
+            divEle.className = "gitalk-container";
+            divEle.style = "width: " + main.clientWidth + "px; margin: 0 auto 20px;";
+            domObj.appendTo(domObj.find(".content"), divEle);
+            gitalk = new Gitalk(
+                Object.assign(gitalkConfig, {
+                    id: !label ? "home" : label
+                })
+            );
+            gitalk.render("gitalk-container-" + label);
+        })
+      }
+    ]
+  </script>
+  
+  <!--google analytics-->
+  <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/ga.min.js"></script>
   
   <!--edit-on-github-->
   <!--<script src="//cdn.jsdelivr.net/npm/docsify-edit-on-github"></script>-->
